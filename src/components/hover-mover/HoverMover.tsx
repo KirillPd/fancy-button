@@ -23,6 +23,18 @@ export const HoverMover: React.FC<Props> = ({ disabled, width, children }) => {
     width,
   });
 
+  React.useEffect(() => {
+    if(!containerRef.current) {
+      return;
+    }
+
+    setWrapperStyles({
+      ...wrapperStyles,
+      top: `${containerRef.current.offsetTop}px`,
+      left: `${containerRef.current.offsetLeft}px`,
+    })
+  }, [containerRef.current]);
+
   const handleMouseEnter = React.useCallback(() => {
     if (disabled) {
       return;
