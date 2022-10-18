@@ -15,16 +15,19 @@ const FORM_CONFIG: FormConfig = {
     required: true,
     rules: {
       [InputName.USERNAME]: (value) => value === 'yay',
+      [InputName.PASSWORD]: (value) => value.length > 0,
     },
   },
 };
 
 export const LoginForm = () => {
-  const { register, handleSubmit, isValid } = useForm(FORM_CONFIG);
+  const { register, handleSubmit, isValid, isTouched } = useForm(FORM_CONFIG);
   const inputsContainerRef = React.useRef<HTMLDivElement>(null);
+  const isFormEnabled = isValid && isTouched;
 
   // TODO: Specify any type
   const onSubmit = async (data: any) => {
+    // TODO: Show a message that everything was ok
     console.log(data);
   };
 
@@ -50,12 +53,14 @@ export const LoginForm = () => {
             />
           </Box>
         </div>
-        <HoverMover disabled={isValid} width={FORM_WIDTH}>
+        <HoverMover disabled={isFormEnabled} width={FORM_WIDTH}>
           <Button
             fullWidth
             type="submit"
             variant="contained"
-            disabled={!isValid}
+            sx={{
+              pointerEvents: isFormEnabled ? 'auto' : 'none',
+            }}
           >
             Login
           </Button>

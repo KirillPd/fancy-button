@@ -1,34 +1,47 @@
 import * as React from 'react';
 
 interface FormData {
-  [key: string]: string;
+  [key: string]: {
+    value: string;
+    isValid: boolean;
+  };
 }
 
 export interface FormConfig {
   validation: {
+    required: boolean;
     rules: {
-      [key: string]: (value?: string) => boolean;
+      [key: string]: (value: string) => boolean;
     };
   };
 }
 
 export const useForm = ({ validation }: FormConfig) => {
-  const [data, setData] = React.useState<FormData>();
-  const [isValid, setIsValid] = React.useState(false);
+  const [data, setData] = React.useState<FormData>({});
+  const [isTouched, setIsTouched] = React.useState(false);
+  const hasErrors = Object.keys(data).some(
+    (inputName) => !data[inputName].isValid
+  );
 
   const register = (inputName: string) => {
     return {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         const value: string = event.target.value;
+        const inputValidator = validation.rules[inputName];
 
-        if (validation.rules[inputName]) {
-
+        if (!isTouched) {
+          setIsTouched(true);
         }
 
-          setData((prevData) => ({
-            ...prevData,
-            [inputName]: ,
-          }));
+        setData((prevData) => ({
+          ...prevData,
+          [inputName]: {
+            value,
+            isValid: inputValidator
+              ? inputValidator(value)
+              : validation.required,
+          },
+        }));
       },
     };
   };
@@ -43,6 +56,7 @@ export const useForm = ({ validation }: FormConfig) => {
   return {
     register,
     handleSubmit,
-    isValid,
+    isValid: !hasErrors,
+    isTouched,
   };
 };
