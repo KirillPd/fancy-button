@@ -3,6 +3,12 @@ import { Box, Button, TextField } from '@mui/material';
 
 import { FormConfig, useForm } from '../../hooks/form-validator/useForm';
 import { HoverMover } from '../hover-mover/HoverMover';
+import { InfoButton } from '../info-button/InfoButton';
+
+interface Props {
+  // TODO: Specify any type
+  onSubmit: (data: any) => void;
+}
 
 export enum InputName {
   USERNAME = 'username',
@@ -11,25 +17,19 @@ export enum InputName {
 
 const FORM_WIDTH = '320px';
 const FORM_CONFIG: FormConfig = {
-  validation: {
-    required: true,
-    rules: {
-      [InputName.USERNAME]: (value) => value === 'yay',
-      [InputName.PASSWORD]: (value) => value.length > 0,
-    },
+  [InputName.USERNAME]: {
+    value: '',
+    rule: (value) => value === 'admin',
+  },
+  [InputName.PASSWORD]: {
+    value: '',
+    rule: (value) => value.length > 0,
   },
 };
 
-export const LoginForm = () => {
-  const { register, handleSubmit, isValid, isTouched } = useForm(FORM_CONFIG);
+export const LoginForm: React.FC<Props> = ({ onSubmit }) => {
+  const { register, handleSubmit, isValid } = useForm(FORM_CONFIG);
   const inputsContainerRef = React.useRef<HTMLDivElement>(null);
-  const isFormEnabled = isValid && isTouched;
-
-  // TODO: Specify any type
-  const onSubmit = async (data: any) => {
-    // TODO: Show a message that everything was ok
-    console.log(data);
-  };
 
   return (
     <Box p={3} width={FORM_WIDTH}>
@@ -53,13 +53,21 @@ export const LoginForm = () => {
             />
           </Box>
         </div>
-        <HoverMover disabled={isFormEnabled} width={FORM_WIDTH}>
+        <HoverMover sx={{ zIndex: 10 }}>
+          <InfoButton />
+        </HoverMover>
+        <HoverMover disabled={isValid} width={FORM_WIDTH}>
+          {/*
+            User is still able to click the button via keyboard navigation
+            To Fix that set disabled={!isValid} property
+            I don't want to change styles of the button to make it more confusing :)
+          */}
           <Button
             fullWidth
             type="submit"
             variant="contained"
             sx={{
-              pointerEvents: isFormEnabled ? 'auto' : 'none',
+              pointerEvents: isValid ? 'auto' : 'none',
             }}
           >
             Login

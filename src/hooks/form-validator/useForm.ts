@@ -8,17 +8,25 @@ interface FormData {
 }
 
 export interface FormConfig {
-  validation: {
-    required: boolean;
-    rules: {
-      [key: string]: (value: string) => boolean;
-    };
+  [key: string]: {
+    value: string;
+    rule?: (value: string) => boolean;
   };
 }
 
-export const useForm = ({ validation }: FormConfig) => {
-  const [data, setData] = React.useState<FormData>({});
-  const [isTouched, setIsTouched] = React.useState(false);
+export const useForm = (config: FormConfig) => {
+  const [data, setData] = React.useState<FormData>(
+    Object.keys(config).reduce<FormData>((fields, fieldName) => {
+      const { value, rule } = config[fieldName];
+
+      fields[fieldName] = {
+        value,
+        isValid: rule ? rule(value) : true,
+      };
+
+      return fields;
+    }, {})
+  );
   const hasErrors = Object.keys(data).some(
     (inputName) => !data[inputName].isValid
   );
@@ -26,27 +34,21 @@ export const useForm = ({ validation }: FormConfig) => {
   const register = (inputName: string) => {
     return {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value: string = event.target.value;
-        const inputValidator = validation.rules[inputName];
-
-        if (!isTouched) {
-          setIsTouched(true);
-        }
+        const value = event.target.value;
+        const {  rule } = config[inputName];
 
         setData((prevData) => ({
           ...prevData,
           [inputName]: {
             value,
-            isValid: inputValidator
-              ? inputValidator(value)
-              : validation.required,
+            isValid: rule ? rule(value) : true,
           },
         }));
       },
     };
   };
 
-  const handleSubmit = (callback: (data?: FormData) => Promise<void>) => {
+  const handleSubmit = (callback: (data?: FormData) => void) => {
     return (event: React.SyntheticEvent) => {
       event.preventDefault();
       callback(data);
@@ -57,6 +59,5 @@ export const useForm = ({ validation }: FormConfig) => {
     register,
     handleSubmit,
     isValid: !hasErrors,
-    isTouched,
   };
 };

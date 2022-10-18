@@ -6,9 +6,10 @@ import { Box } from '@mui/material';
 import { calculateRandomOffset } from './calculateRandomOffset';
 
 interface Props {
-  disabled: boolean;
-  width: string;
   children: React.ReactNode;
+  disabled?: boolean;
+  width?: string;
+  sx?: SxProps<Theme>;
 }
 
 const baseContainerStyles: SxProps<Theme> = {
@@ -16,15 +17,21 @@ const baseContainerStyles: SxProps<Theme> = {
   transition: 'top 0.5s ease-in-out, left 0.5s ease-in-out',
 };
 
-export const HoverMover: React.FC<Props> = ({ disabled, width, children }) => {
+export const HoverMover: React.FC<Props> = ({
+  disabled,
+  width,
+  sx: customStyles,
+  children,
+}) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [wrapperStyles, setWrapperStyles] = React.useState<SxProps<Theme>>({
     ...baseContainerStyles,
-    width,
+    ...customStyles,
+    width: width || 'auto',
   });
 
   React.useEffect(() => {
-    if(!containerRef.current) {
+    if (!containerRef.current) {
       return;
     }
 
@@ -32,7 +39,7 @@ export const HoverMover: React.FC<Props> = ({ disabled, width, children }) => {
       ...wrapperStyles,
       top: `${containerRef.current.offsetTop}px`,
       left: `${containerRef.current.offsetLeft}px`,
-    })
+    });
   }, [containerRef.current]);
 
   const handleMouseEnter = React.useCallback(() => {
