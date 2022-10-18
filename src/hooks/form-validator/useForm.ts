@@ -4,16 +4,31 @@ interface FormData {
   [key: string]: string;
 }
 
-export const useForm = () => {
+export interface FormConfig {
+  validation: {
+    rules: {
+      [key: string]: (value?: string) => boolean;
+    };
+  };
+}
+
+export const useForm = ({ validation }: FormConfig) => {
   const [data, setData] = React.useState<FormData>();
+  const [isValid, setIsValid] = React.useState(false);
 
   const register = (inputName: string) => {
     return {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-        setData((prevData) => ({
-          ...prevData,
-          [inputName]: event.target.value,
-        }));
+        const value: string = event.target.value;
+
+        if (validation.rules[inputName]) {
+
+        }
+
+          setData((prevData) => ({
+            ...prevData,
+            [inputName]: ,
+          }));
       },
     };
   };
@@ -28,5 +43,6 @@ export const useForm = () => {
   return {
     register,
     handleSubmit,
+    isValid,
   };
 };

@@ -1,13 +1,26 @@
 import * as React from 'react';
 import { Box, Button, TextField } from '@mui/material';
 
-import { useForm } from '../../hooks/form-validator/useForm';
+import { FormConfig, useForm } from '../../hooks/form-validator/useForm';
 import { HoverMover } from '../hover-mover/HoverMover';
 
+export enum InputName {
+  USERNAME = 'username',
+  PASSWORD = 'password',
+}
+
 const FORM_WIDTH = '320px';
+const FORM_CONFIG: FormConfig = {
+  validation: {
+    required: true,
+    rules: {
+      [InputName.USERNAME]: (value) => value === 'yay',
+    },
+  },
+};
 
 export const LoginForm = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, isValid } = useForm(FORM_CONFIG);
   const inputsContainerRef = React.useRef<HTMLDivElement>(null);
 
   // TODO: Specify any type
@@ -24,7 +37,7 @@ export const LoginForm = () => {
               fullWidth
               label="Username"
               variant="outlined"
-              {...register('username')}
+              {...register(InputName.USERNAME)}
             />
           </Box>
           <Box mb={3}>
@@ -33,13 +46,17 @@ export const LoginForm = () => {
               label="Password"
               type="password"
               variant="outlined"
-              {...register('password')}
+              {...register(InputName.PASSWORD)}
             />
           </Box>
         </div>
-        {/*TODO: Disabled={isValid}*/}
-        <HoverMover disabled={false} width={FORM_WIDTH}>
-          <Button fullWidth type="submit" variant="contained">
+        <HoverMover disabled={isValid} width={FORM_WIDTH}>
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            disabled={!isValid}
+          >
             Login
           </Button>
         </HoverMover>
