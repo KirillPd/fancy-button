@@ -1,16 +1,16 @@
 import * as React from 'react';
 
-interface FormData {
-  [key: string]: {
-    value: string;
-    isValid: boolean;
-  };
-}
-
 export interface FormConfig {
   [key: string]: {
     value: string;
     rule?: (value: string) => boolean;
+  };
+}
+
+export interface FormData {
+  [key: string]: {
+    value: string;
+    isValid: boolean;
   };
 }
 
@@ -27,6 +27,7 @@ export const useForm = (config: FormConfig) => {
       return fields;
     }, {})
   );
+
   const hasErrors = Object.keys(data).some(
     (inputName) => !data[inputName].isValid
   );
@@ -35,7 +36,7 @@ export const useForm = (config: FormConfig) => {
     return {
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        const {  rule } = config[inputName];
+        const { rule } = config[inputName];
 
         setData((prevData) => ({
           ...prevData,
@@ -48,7 +49,7 @@ export const useForm = (config: FormConfig) => {
     };
   };
 
-  const handleSubmit = (callback: (data?: FormData) => void) => {
+  const handleSubmit = (callback: (data: FormData) => void) => {
     return (event: React.SyntheticEvent) => {
       event.preventDefault();
       callback(data);

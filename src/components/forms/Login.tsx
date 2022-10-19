@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { Box, Button, TextField } from '@mui/material';
 
-import { FormConfig, useForm } from '../../hooks/form-validator/useForm';
+import {
+  FormConfig,
+  FormData,
+  useForm,
+} from '../../hooks/form-validator/useForm';
 import { HoverMover } from '../hover-mover/HoverMover';
 import { InfoButton } from '../info-button/InfoButton';
 
 interface Props {
-  // TODO: Specify any type
-  onSubmit: (data: any) => void;
+  onSubmit: (data: FormData) => void;
 }
 
 export enum InputName {
